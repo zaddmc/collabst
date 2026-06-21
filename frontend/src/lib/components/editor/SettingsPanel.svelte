@@ -4,11 +4,13 @@
   import ChevronUp from "@lucide/svelte/icons/chevron-up";
   import ChevronDown from "@lucide/svelte/icons/chevron-down";
   import Ligature from "@lucide/svelte/icons/ligature";
+  import Terminal from "@lucide/svelte/icons/terminal";
   import Checkbox from "../ui/Checkbox.svelte";
 
   let fontSize = $state($editorSettings.fontSize);
   let fontFamily = $state($editorSettings.fontFamily);
   let ligatures = $state($editorSettings.ligatures);
+  let vimMode = $state($editorSettings.vimMode);
 
   // Sync local state with store
   $effect(() => {
@@ -21,6 +23,10 @@
 
   $effect(() => {
     ligatures = $editorSettings.ligatures;
+  });
+
+  $effect(() => {
+    vimMode = $editorSettings.vimMode;
   });
 
   function handleFontSizeInput(event: Event) {
@@ -72,6 +78,11 @@
   function toggleLigatures(checked: boolean) {
     ligatures = checked;
     editorSettings.setLigatures(checked);
+  }
+
+  function toggleVimMode(checked: boolean) {
+    vimMode = checked;
+    editorSettings.setVimMode(checked);
   }
 </script>
 
@@ -156,177 +167,22 @@
           />
         </div>
       </div>
+
+      <div class="setting-item">
+        <div class="setting-row">
+          <label class="checkbox-label" for="vim-mode">
+            <Terminal size={16} />
+            <span>Vim mode</span>
+          </label>
+          <Checkbox
+            id="vim-mode"
+            checked={vimMode}
+            onchange={toggleVimMode}
+          />
+        </div>
+      </div>
     </section>
   </div>
 </div>
 
-<style>
-  .settings-panel {
-    width: 100%;
-    height: calc(100% - var(--space-3));
-    background: var(--bg-file-panel);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 8px;
-    margin: 0 0 var(--space-3) 0;
-  }
-
-  .panel-header {
-    padding: var(--space-4);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  h3 {
-    margin: 0;
-    font-size: var(--text-base);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-  }
-
-  .panel-content {
-    flex: 1;
-    padding: var(--space-4);
-    overflow-y: auto;
-  }
-
-  .settings-section {
-    margin-bottom: var(--space-6);
-  }
-
-  h4 {
-    margin: 0 0 var(--space-4) 0;
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: +0.01em;
-  }
-
-  .setting-item {
-    margin-bottom: var(--space-4);
-  }
-
-  .setting-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-  }
-
-  label {
-    font-size: var(--text-sm);
-    color: var(--text-primary);
-    font-weight: var(--font-medium);
-  }
-
-  .input-with-controls {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-  }
-
-  .input-with-reset {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-top: var(--space-2);
-  }
-
-  input {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-primary);
-    font-size: var(--text-xs);
-    color: var(--text-primary);
-    background: var(--bg-editor);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-lg);
-  }
-
-  input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary-alpha);
-  }
-
-  .font-size-input {
-    width: 40px;
-    padding: var(--space-2) var(--space-2);
-    text-align: right;
-  }
-
-  .font-family-input {
-    flex: 1;
-    min-width: 120px;
-    padding: var(--space-2) 5px;
-  }
-
-  .increment-buttons {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .increment-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 15px;
-    background: var(--bg-editor);
-    border: 1px solid var(--border);
-    color: var(--color-primary-500);
-    cursor: pointer;
-    padding: 0;
-  }
-
-  .increment-btn:first-child {
-    border-radius: 4px 4px 0 0;
-    border-bottom: none;
-  }
-
-  .increment-btn:last-child {
-    border-radius: 0 0 4px 4px;
-  }
-
-  .increment-btn:hover {
-    background: var(--surface-hover);
-  }
-
-  .increment-btn:active {
-    background: var(--surface-active);
-  }
-
-  .reset-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    background: transparent;
-    border: none;
-    border-radius: 50px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 0;
-    /* margin-left: -5px; */
-    margin-right: -10px;
-  }
-
-  .reset-btn:hover {
-    color: var(--text-primary);
-  }
-
-  .reset-btn:active {
-    color: var(--text-active);
-    transform: scale(0.9);
-  }
-
-  .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    cursor: pointer;
-  }
-</style>
+<style></style>

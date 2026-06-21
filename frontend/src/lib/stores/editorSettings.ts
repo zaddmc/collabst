@@ -5,12 +5,14 @@ export interface EditorSettings {
   fontSize: number
   fontFamily: string
   ligatures: boolean
+  vimMode: boolean
 }
 
 const DEFAULT_SETTINGS: EditorSettings = {
   fontSize: 13,
   fontFamily: '"JetBrains Mono", monospace',
-  ligatures: true
+  ligatures: true,
+  vimMode: false
 }
 
 // Get initial settings from localStorage or default values
@@ -24,7 +26,8 @@ function getInitialSettings(): EditorSettings {
       return {
         fontSize: typeof parsed.fontSize === 'number' ? parsed.fontSize : DEFAULT_SETTINGS.fontSize,
         fontFamily: typeof parsed.fontFamily === 'string' ? parsed.fontFamily : DEFAULT_SETTINGS.fontFamily,
-        ligatures: typeof parsed.ligatures === 'boolean' ? parsed.ligatures : DEFAULT_SETTINGS.ligatures
+        ligatures: typeof parsed.ligatures === 'boolean' ? parsed.ligatures : DEFAULT_SETTINGS.ligatures,
+        vimMode: typeof parsed.vimMode === 'boolean' ? parsed.vimMode : DEFAULT_SETTINGS.vimMode
       }
     }
   } catch (error) {
@@ -93,6 +96,15 @@ function createEditorSettingsStore() {
     setLigatures: (ligatures: boolean) => {
       update(current => {
         const newSettings = { ...current, ligatures }
+        if (browser) {
+          localStorage.setItem('editorSettings', JSON.stringify(newSettings))
+        }
+        return newSettings
+      })
+    },
+    setVimMode: (vimMode: boolean) => {
+      update(current => {
+        const newSettings = { ...current, vimMode }
         if (browser) {
           localStorage.setItem('editorSettings', JSON.stringify(newSettings))
         }

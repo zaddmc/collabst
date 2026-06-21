@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { EditorView, basicSetup } from "codemirror";
+  import { vim } from "@codemirror/vim";
   import { EditorState, Compartment } from "@codemirror/state";
   import { yCollab } from "y-codemirror.next";
   import {
@@ -59,6 +60,7 @@
   const ligaturesCompartment = new Compartment();
   const readOnlyCompartment = new Compartment();
   const editableCompartment = new Compartment();
+  const vimCompartment = new Compartment();
 
   // Track which lines have errors
   let errorLines = new Set<number>();
@@ -72,6 +74,11 @@
   // Subscribe to editor settings changes
   $: if (view && $editorSettings) {
     updateEditorStyles();
+  }
+
+  // Update vim mode when setting changes
+  $: if (view && $editorSettings) {
+    updateVimMode();
   }
 
   // Update ligatures when setting changes
@@ -204,6 +211,19 @@
 
     view.dispatch({
       effects: editorStyleCompartment.reconfigure(getEditorStyleExtensions()),
+    });
+  }
+
+  // Get vim extension based on settings
+  function getVimExtension() {
+    return $editorSettings.vimMode ? [vim()] : [];
+  }
+
+  // Update vim mode when setting changes
+  function updateVimMode() {
+    if (!view) return;
+    view.dispatch({
+      effects: vimCompartment.reconfigure(getVimExtension()),
     });
   }
 
@@ -672,6 +692,7 @@
         indentUnit.of("  "), // Set indentation to 2 spaces
         readOnlyCompartment.of(EditorState.readOnly.of(!editable)),
         editableCompartment.of(EditorView.editable.of(editable)),
+        vimCompartment.of(getVimExtension()),
         yCollab(ytext, provider.awareness, { undoManager }),
         createUndoRedoKeymap(),
         commentsExtension(),
@@ -756,6 +777,7 @@
           indentUnit.of("  "), // Set indentation to 2 spaces
           readOnlyCompartment.of(EditorState.readOnly.of(!editable)),
           editableCompartment.of(EditorView.editable.of(editable)),
+          vimCompartment.of(getVimExtension()),
           yCollab(ytext, provider.awareness, { undoManager }),
           createUndoRedoKeymap(),
           commentsExtension(),
@@ -845,59 +867,4 @@
 
 <div bind:this={editorElement} class="editor"></div>
 
-<style>
-  .editor {
-    height: 100%;
-    font-size: 14px;
-    font-family: monospace;
-  }
-
-  :global(.cm-editor) {
-    height: 100%;
-  }
-
-  :global(.cm-editor.cm-readonly) {
-    cursor: default;
-  }
-
-  :global(.cm-editor.cm-readonly .cm-cursor),
-  :global(.cm-editor.cm-readonly .cm-dropCursor) {
-    display: none;
-  }
-
-  /* Custom error underline for diagnostics */
-  :global(.cm-lintRange.cm-lintRange-error) {
-    text-decoration: underline wavy var(--color-error) 1px;
-    text-underline-offset: 2px;
-    background: none;
-  }
-
-  /* Single character error styling with arrow */
-  :global(.cm-lintRange.cm-lintRange-error[data-single-char="true"]) {
-    text-decoration: none;
-    position: relative;
-  }
-
-  :global(.cm-lintRange.cm-lintRange-error[data-single-char="true"]::after) {
-    content: "‸";
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--color-error);
-    font-size: 18px;
-    font-weight: bold;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  /* Custom text box info */
-  :global(.cm-diagnostic) {
-    background-color: var(--bg-topbar);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-lg);
-    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-3);
-  }
-</style>
+<style></style>
