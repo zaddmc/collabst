@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { EditorView, basicSetup } from "codemirror";
-  import { vim } from "@codemirror/vim";
+  import { vim } from "@replit/codemirror-vim";
   import { EditorState, Compartment } from "@codemirror/state";
   import { yCollab } from "y-codemirror.next";
   import {

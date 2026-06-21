@@ -31,7 +31,12 @@ services:
       retries: 5
 
   backend:
-    image: ghcr.io/collabst/collabst:${COLLABST_TAG:-latest}
+    # image: ghcr.io/collabst/collabst:${COLLABST_TAG:-latest}
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.prod
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
     container_name: collabst-backend
     restart: unless-stopped
     environment:
